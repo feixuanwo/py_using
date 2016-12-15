@@ -21,11 +21,6 @@ def follow(thefile):
     global file_size
     thefile.seek(0,2)
     while True:
-        dt = datetime.datetime.now().strftime("%H%M%S")
-        if (dt >= "223000" or dt <= "080000"):
-            logging.info("当前时间:%s, 不予监控!", dt)
-            time.sleep(30)
-            continue
         line = thefile.readline()
         if not line:
             time.sleep(0.1)
@@ -93,9 +88,15 @@ if __name__ == '__main__':
                          logging.info("此次监控周期开始")
                          
                      if(errCount >= 20):
-                         errCount = 0
-                         logging.info('条件被触发')
-                         os.system('curl -d "message=20140903|130954|616978|18516180631|prepo get servie error|00899999" http://197.68.88.105:8028/zc19/qtPaySendMessage.do')
+                         dt = datetime.datetime.now().strftime("%H%M%S")
+                         if (dt >= "080000" and dt <= "223000"):
+                             errCount = 0
+                             logging.info('条件被触发')
+                             os.system('curl -d "message=20140903|130954|616978|18516180631|prepo get servie error|00899999" http://197.68.88.105:8028/zc19/qtPaySendMessage.do')
+                         else:
+                             logging.info("当前时间:%s, 不予监控!", dt)
+                             errCount = 0
+                             time.sleep(30)
 
         monitorfile.close()
         logging.info('file is closed!')
